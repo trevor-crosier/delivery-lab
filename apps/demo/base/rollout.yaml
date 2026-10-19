@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: demo
+  labels: { app: demo }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: demo } }
+  template:
+    metadata:
+      labels: { app: demo }
+    spec:
+      containers:
+        - name: demo
+          image: ghcr.io/stefanprodan/podinfo:6.7.0
+          ports: [{ name: http, containerPort: 9898 }]
+          resources: { requests: { cpu: 100m, memory: 64Mi }, limits: { memory: 128Mi } }
+          readinessProbe: { httpGet: { path: /readyz, port: http }, periodSeconds: 5 }
+  strategy:
+    canary:
+      stableService: demo-stable
+      canaryService: demo-canary
+      canaryMetadata: { labels: { version: canary } }   # Istio reports these as destination_version
+      stableMetadata: { labels: { version: stable } }
+      trafficRouting:
+        istio:
+          virtualService: { name: demo, routes: [primary] }
+      analysis:
+        templates: [{ templateName: demo-smoke }]
+        startingStep: 1          # run analysis once traffic is split
+      steps:
+        - setWeight: 20
+        - pause: {}              # manual promote (or set a duration)
+        - setWeight: 60
+        - pause: { duration: 30s }

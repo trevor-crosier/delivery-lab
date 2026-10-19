@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: demo
+resources:
+  - ../../base
+labels:
+  - pairs: { env: dev }
+images:
+  - name: ghcr.io/stefanprodan/podinfo
+    newTag: "6.7.0"          # CI (Lab 8) and you edit this line; nothing else

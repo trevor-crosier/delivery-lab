@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: { name: monitoring, namespace: argocd }
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: "<current-chart-version>"       # helm search repo prometheus-community/kube-prometheus-stack
+    helm:
+      values: |
+        prometheus:
+          prometheusSpec:
+            serviceMonitorSelectorNilUsesHelmValues: false   # scrape every ServiceMonitor, not only the chart's
+            ruleSelectorNilUsesHelmValues: false
+        grafana:
+          adminPassword: lab-only
+  destination: { server: https://kubernetes.default.svc, namespace: monitoring }
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+    syncOptions: [CreateNamespace=true, ServerSideApply=true]   # SSA: the CRDs are too large for client-side apply annotations

@@ -1,0 +1,4 @@
+infra/state/
+.terragrunt-cache/
+.terraform/
+*.tfstate*

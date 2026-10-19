@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: inflate }
+spec:
+  replicas: 0
+  selector: { matchLabels: { app: inflate } }
+  template:
+    metadata: { labels: { app: inflate } }
+    spec:
+      containers:
+        - name: pause
+          image: public.ecr.aws/eks-distro/kubernetes/pause:3.9
+          resources: { requests: { cpu: "1", memory: 1Gi } }
+      nodeSelector:
+        karpenter.k8s.aws/instance-category: c      # steer: compute-optimized only

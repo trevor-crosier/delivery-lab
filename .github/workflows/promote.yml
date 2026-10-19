@@ -1,0 +1,38 @@
+name: scan-and-promote
+on:
+  workflow_dispatch:
+    inputs:
+      tag: { description: "podinfo tag to promote to dev", required: true }
+
+permissions: { contents: write }
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@<pinned>
+      # In the real pipeline: docker/build-push-action pushes to Harbor with a robot account here,
+      # then anchorectl image check --fail-based-on-results runs against the pushed digest.
+      - name: scan the exact image (Trivy standing in for Anchore)
+        uses: aquasecurity/trivy-action@<pinned>
+        with:
+          image-ref: ghcr.io/stefanprodan/podinfo:${{ inputs.tag }}
+          severity: CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"          # STOP on a Critical with a fix available
+  promote:
+    needs: gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@<pinned>
+      - name: resolve digest and pin it
+        run: |
+          docker pull ghcr.io/stefanprodan/podinfo:${{ inputs.tag }}
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/stefanprodan/podinfo:${{ inputs.tag }} | cut -d@ -f2)
+          echo "DIGEST=$DIGEST" >> "$GITHUB_ENV"
+      - name: edit the overlay — the only file CI touches
+        run: |
+          cd apps/demo/overlays/dev
+          kustomize edit set image ghcr.io/stefanprodan/podinfo=ghcr.io/stefanprodan/podinfo@${{ env.DIGEST }}
+          git config user.name ci && git config user.email ci@example.test
+          git commit -am "demo: promote podinfo ${{ inputs.tag }} (${{ env.DIGEST }}) to dev" && git push
