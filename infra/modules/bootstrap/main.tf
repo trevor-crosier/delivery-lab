@@ -1,13 +1,19 @@
 terraform {
   required_version = ">= 1.6"
   required_providers {
-    helm       = { source = "hashicorp/helm",       version = "~> 2.17" }   # 2.x = block syntax below; 3.x changed it
+    helm       = { source = "hashicorp/helm", version = "~> 2.17" } # 2.x = block syntax below; 3.x changed it
     kubernetes = { source = "hashicorp/kubernetes", version = "~> 2.33" }
   }
 }
 
-variable "kube_context" { type = string, default = "docker-desktop" }
-variable "kubeconfig"   { type = string, default = "~/.kube/config" }
+variable "kube_context" {
+  type    = string
+  default = "docker-desktop"
+}
+variable "kubeconfig" {
+  type    = string
+  default = "~/.kube/config"
+}
 
 provider "helm" {
   kubernetes {
@@ -37,7 +43,7 @@ resource "helm_release" "argocd" {
   namespace        = "argocd"
   create_namespace = true
   values = [yamlencode({
-    configs = { params = { "server.insecure" = true } }   # plain HTTP for port-forward in the lab
+    configs = { params = { "server.insecure" = true } } # plain HTTP for port-forward in the lab
   })]
 }
 
