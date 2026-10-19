@@ -10,6 +10,7 @@ variable "kube_context" {
   type    = string
   default = "docker-desktop"
 }
+
 variable "kubeconfig" {
   type    = string
   default = "~/.kube/config"
@@ -21,6 +22,7 @@ provider "helm" {
     config_context = var.kube_context
   }
 }
+
 provider "kubernetes" {
   config_path    = pathexpand(var.kubeconfig)
   config_context = var.kube_context
@@ -43,7 +45,9 @@ resource "helm_release" "argocd" {
   namespace        = "argocd"
   create_namespace = true
   values = [yamlencode({
-    configs = { params = { "server.insecure" = true } } # plain HTTP for port-forward in the lab
+    configs = { params = { "server.insecure" = true } } # plain HTTP for the lab
+    # Docker Desktop maps LoadBalancer Services to localhost; port-forward is unreliable on this cluster.
+    server = { service = { type = "LoadBalancer", servicePortHttp = 8080 } }
   })]
 }
 
