@@ -1,6 +1,6 @@
 include "root" {
   path   = find_in_parent_folders("root.hcl")
-  expose = true
+  expose = true                       # required to read include.root.locals below
 }
 
 terraform { source = "../../../modules/bootstrap" }

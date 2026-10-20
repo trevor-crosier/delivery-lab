@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/trevor-crosier/delivery-lab.git     # your public repo
+    repoURL: https://github.com/trevor-crosier/delivery-lab.git
     targetRevision: main
     path: apps/demo/overlays/dev
   destination:

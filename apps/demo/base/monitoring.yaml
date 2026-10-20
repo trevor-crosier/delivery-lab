@@ -21,4 +21,4 @@ spec:
           labels: { severity: page }
           annotations:
             summary: "demo error rate above 5% for 2m"
-            runbook: "https://github.com/<you>/delivery-lab/blob/main/RUNBOOK.md#demo-errors"
+            runbook: "https://github.com/trevor-crosier/delivery-lab/blob/main/RUNBOOK.md#demo-errors"

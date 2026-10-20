@@ -15,6 +15,7 @@ spec:
             ruleSelectorNilUsesHelmValues: false
         grafana:
           adminPassword: lab-only
+          service: { type: LoadBalancer, port: 3000 }        # Docker Desktop → localhost:3000
   destination: { server: https://kubernetes.default.svc, namespace: monitoring }
   syncPolicy:
     automated: { prune: true, selfHeal: true }

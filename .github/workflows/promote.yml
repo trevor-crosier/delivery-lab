@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@<pinned>
-      # In the real pipeline: docker/build-push-action pushes to Harbor with a robot account here,
+      # Real pipeline: docker/build-push-action pushes to Harbor with a robot account here,
       # then anchorectl image check --fail-based-on-results runs against the pushed digest.
       - name: scan the exact image (Trivy standing in for Anchore)
         uses: aquasecurity/trivy-action@<pinned>

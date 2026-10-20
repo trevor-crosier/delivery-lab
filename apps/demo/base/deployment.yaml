@@ -4,7 +4,7 @@ metadata:
   name: demo
   labels: { app: demo }
 spec:
-  # no replicas: here on purpose — Lab 4 gives it to an HPA
+  # no replicas: here on purpose — L4 gives it to an HPA
   selector: { matchLabels: { app: demo } }
   strategy:
     type: RollingUpdate
@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: demo
-          image: ghcr.io/stefanprodan/podinfo:6.7.0     # confirm the tag exists in the GHCR tag list first
+          image: ghcr.io/stefanprodan/podinfo:6.7.0     # confirm the tag exists first
           ports:
             - { name: http, containerPort: 9898 }       # "http" prefix matters for Istio protocol selection
           resources:
