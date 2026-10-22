@@ -7,4 +7,4 @@ labels:
   - pairs: { env: dev }
 images:
   - name: ghcr.io/stefanprodan/podinfo
-    newTag: "6.7.0"          # CI (L8) and you edit this line; nothing else
+    newTag: "9.9.9-nope"          # CI (L8) and you edit this line; nothing else
